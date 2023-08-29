@@ -1,29 +1,25 @@
-require_relative "udp_moose"
-require "base64"
+# frozen_string_literal: true
+
+require_relative 'udp_moose'
+require 'base64'
 
 begin
+  socket = UDPMoose.new(ARGV[1])
 
-	socket = UDPMoose.new(ARGV[1])
-  
   3.times do |i|
-    ARGV[i+1] = ARGV[i+1].to_i if ARGV[i+1]
+    ARGV[i + 1] = ARGV[i + 1].to_i if ARGV[i + 1]
   end
-	
-  request_id = socket.send("hello world", *ARGV)
 
-	# non block here
+  request_id = socket.send('hello world', *ARGV)
 
-	socket.get_responses(request_id) do |responses|
+  # non block here
 
-    puts "data transmission failed" if responses.empty?
-		responses.each do |server_ip|
-			puts "successful transmission to " + server_ip
-		end
-
-	end
-
+  socket.get_responses(request_id) do |responses|
+    puts 'data transmission failed' if responses.empty?
+    responses.each do |server_ip|
+      puts "successful transmission to #{server_ip}"
+    end
+  end
 rescue Interrupt
-
-  raise SignalException.new(2)
-
+  raise SignalException, 2
 end
